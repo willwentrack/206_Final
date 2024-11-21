@@ -7,7 +7,8 @@ import shutil
 import re
 # github test
 
-def fetch_weather_data(api_key, location, date):
+def fetch_weather_data():
+
     """
     Fetch weather data for a specific location and date from the Weatherstack API.
     
@@ -19,8 +20,28 @@ def fetch_weather_data(api_key, location, date):
     Returns:
         dict: Parsed JSON response from the API.
     """
-    # Example API endpoint: "http://api.weatherstack.com/historical"
-    pass
+    """
+    Fetch weather data for a specific location from the Visual Crossing API.
+    
+    Args:
+        api_key (str): Your API key for Visual Crossing.
+        location (str): Location for which to fetch weather data.
+        unit_group (str): Unit group ('us', 'metric', etc.).
+    
+    Returns:
+        dict: Parsed JSON response from the API.
+    """
+
+    try:
+        url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/East%20Lansing/2005-08-20/2023-12-03?unitGroup=metric&key=VFBRLN44NARQS8PNBZDGBALGY&contentType=json"
+        response = requests.get(url)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+    return None
 
 def store_weather_data(db_name, data):
     """
