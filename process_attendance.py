@@ -33,6 +33,24 @@ def calculate_attendance_intervals():
         
         print(f"Attendance interval frequencies written to '{output_file}'.")
 
+ 
+        plt.figure(figsize=(12, 6))
+        
+        bars = plt.bar(range(len(frequency)), list(frequency.values()))
+        
+        plt.title('MSU Football Game Attendance Distribution')
+        plt.xlabel('Attendance Range')
+        plt.ylabel('Number of Events')
+        
+        # x-axis labels
+        plt.xticks(range(len(frequency)), list(frequency.keys()), rotation=45)
+        
+        # value labels at the top of the bars
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{int(height)}',
+                    ha='center', va='bottom')
 if __name__ == "__main__":
     calculate_attendance_intervals()
 
