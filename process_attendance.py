@@ -1,4 +1,5 @@
 import sqlite3
+import matplotlib.pyplot as plt
 
 # Database setup
 db_name = "full_attendance_data.db"
