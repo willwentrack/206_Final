@@ -51,6 +51,10 @@ def calculate_attendance_intervals():
             plt.text(bar.get_x() + bar.get_width()/2., height,
                     f'{int(height)}',
                     ha='center', va='bottom')
+
+        plt.tight_layout()
+        plt.savefig('attendance_distribution.png')
+        plt.close()
 if __name__ == "__main__":
     calculate_attendance_intervals()
 
