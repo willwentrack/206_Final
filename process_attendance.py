@@ -51,7 +51,7 @@ def calculate_attendance_intervals():
         plt.xlabel('Attendance Range')
         plt.ylabel('Number of Events')
         
-        # x-axis labels
+        # x-axis labels (adding + rotating)  
         plt.xticks(range(len(frequency)), list(frequency.keys()), rotation=45)
         
         # adding value labels on top of each bar
