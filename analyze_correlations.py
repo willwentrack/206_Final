@@ -65,3 +65,47 @@ def calculate_correlations(df):
         f.write("impact on msu points scored:\n")
         f.write(f"temperature vs points: r={temp_points_corr[0]:.3f}, p={temp_points_corr[1]:.3f}\n")
         f.write(f"precipitation vs points: r={precip_points_corr[0]:.3f}, p={precip_points_corr[1]:.3f}\n")
+
+
+def create_visualization(df):
+    # create four scatter plots to visualize the relationships
+    # between weather conditions and game outcomes
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
+    
+    # plot 1: see if warmer weather brings more fans
+    ax1.scatter(df['temp_max'], df['attendance'])
+    ax1.set_xlabel('temperature (°c)')
+    ax1.set_ylabel('attendance')
+    ax1.set_title('temperature vs attendance')
+    
+    # plot 2: see if rain keeps fans away
+    ax2.scatter(df['precipitation'], df['attendance'])
+    ax2.set_xlabel('precipitation (mm)')
+    ax2.set_ylabel('attendance')
+    ax2.set_title('precipitation vs attendance')
+    
+    # plot 3: see if temperature affects scoring
+    ax3.scatter(df['temp_max'], df['msu_points'])
+    ax3.set_xlabel('temperature (°c)')
+    ax3.set_ylabel('msu points scored')
+    ax3.set_title('temperature vs points scored')
+    
+    # plot 4: see if rain affects scoring
+    ax4.scatter(df['precipitation'], df['msu_points'])
+    ax4.set_xlabel('precipitation (mm)')
+    ax4.set_ylabel('msu points scored')
+    ax4.set_title('precipitation vs points scored')
+    
+    plt.tight_layout()
+    plt.savefig('weather_impact_analysis.png')
+    plt.close()
+
+def main():
+    # running all our analysis steps in sequence
+    df = load_and_merge_data()
+    calculate_correlations(df)
+    create_visualization(df)
+    print("analysis complete! check correlation_results.txt and weather_impact_analysis.png")
+
+if __name__ == "__main__":
+    main()
