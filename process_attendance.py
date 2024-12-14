@@ -1,6 +1,8 @@
+#importing needed libraries
 import sqlite3
 import matplotlib.pyplot as plt 
 
+# setting the file names
 db_name = "full_attendance_data.db"
 output_file = "attendance_intervals.txt"
 
