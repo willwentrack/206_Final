@@ -33,3 +33,16 @@ def load_and_merge_data():
     merged_df = pd.merge(merged_df, attendance_df, on='date')
     
     return merged_df
+
+def calculate_correlations(df):
+    # calculate correlation coefficients and p-values
+    # correlation of 1 = perfect positive relationship
+    # correlation of -1 = perfect negative relationship
+    # correlation of 0 = no relationship
+    # p-value < 0.05 =  correlation is statistically significant
+    
+    # analyze how temperature affects attendance
+    temp_attendance_corr = stats.pearsonr(df['temp_max'], df['attendance'])
+    
+    # analyze how rain affects attendance
+    precip_attendance_corr = stats.pearsonr(df['precipitation'], df['attendance'])
