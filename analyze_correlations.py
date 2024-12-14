@@ -46,3 +46,22 @@ def calculate_correlations(df):
     
     # analyze how rain affects attendance
     precip_attendance_corr = stats.pearsonr(df['precipitation'], df['attendance'])
+
+    # analyze how temperature affects msu's scoring
+    temp_points_corr = stats.pearsonr(df['temp_max'], df['msu_points'])
+    
+    # analyze how rain affects msu's scoring
+    precip_points_corr = stats.pearsonr(df['precipitation'], df['msu_points'])
+    
+    # saving all results to a text file for the project report
+    with open('correlation_results.txt', 'w') as f:
+        f.write("weather impact analysis on msu football\n")
+        f.write("=====================================\n\n")
+        
+        f.write("impact on attendance:\n")
+        f.write(f"temperature vs attendance: r={temp_attendance_corr[0]:.3f}, p={temp_attendance_corr[1]:.3f}\n")
+        f.write(f"precipitation vs attendance: r={precip_attendance_corr[0]:.3f}, p={precip_attendance_corr[1]:.3f}\n\n")
+        
+        f.write("impact on msu points scored:\n")
+        f.write(f"temperature vs points: r={temp_points_corr[0]:.3f}, p={temp_points_corr[1]:.3f}\n")
+        f.write(f"precipitation vs points: r={precip_points_corr[0]:.3f}, p={precip_points_corr[1]:.3f}\n")
