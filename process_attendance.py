@@ -14,35 +14,28 @@ def calculate_attendance_intervals():
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         
-        # fetching all the attendance records from database
-
-        query = "SELECT attendance FROM AttendanceHistory"
+        query = "SELECT attendance FROM AttendanceHistory" # get attendance records from database
         cursor.execute(query)
         attendance_data = [row[0] for row in cursor.fetchall()]
 
-        # setting up attendance ranges by 10,000 person intervals
-        interval_size = 10000
+        interval_size = 10000 # get attendance ranges
         max_interval = 80000
         intervals = list(range(0, max_interval + interval_size, interval_size))
-         # creating dictionary to store count of games in each attendance range
         frequency = {f"{start}-{start + interval_size - 1}": 0 for start in intervals[:-1]}
 
-        # counting the number of games in each attendance range
-        for attendance in attendance_data:
+        for attendance in attendance_data: # count the number of games in each attendance range
             for start in intervals[:-1]:
                 if start <= attendance < start + interval_size:
                     frequency[f"{start}-{start + interval_size - 1}"] += 1
                     break
-        
-        # saving attendance distribution to txt file
 
         with open(output_file, 'w') as f:
-            for interval, count in frequency.items():
+            for interval, count in frequency.items(): # save the attendance distribution to txt file
                 f.write(f"{interval}: {count} events\n")
         
         print(f"Attendance interval frequencies written to '{output_file}'.")
         
-        # creating the bar graph
+        # creating the bar graph # create the bar graph
         plt.figure(figsize=(12, 6))
         bars = plt.bar(range(len(frequency)), list(frequency.values()))
 
