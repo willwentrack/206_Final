@@ -44,6 +44,13 @@ def create_table():
         """)
         conn.commit()
 
+# Function to count already stored records
+def count_existing_records():
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+        return cursor.fetchone()[0]
+
 # Function to insert data into the database
 def insert_data(day):
     with sqlite3.connect(db_name) as conn:
@@ -66,11 +73,11 @@ def insert_data(day):
 # Fetch data for each date
 def fetch_data_for_date(date):
     try:
-        url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/East%20Lansing/{date}/{date}?unitGroup=metric&key=YG3BWARZ7M7W7TADTU38X6J53&contentType=json"
+        url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/East%20Lansing/{date}/{date}?unitGroup=metric&key=VFBRLN44NARQS8PNBZDGBALGY&contentType=json"
         response = urllib.request.urlopen(url)
         json_data = json.load(response)
         if "days" in json_data and len(json_data["days"]) > 0:
-            return json_data["days"][0]  # Return the first (and only) day's data
+            return json_data["days"][0]
         else:
             print(f"No data found for date: {date}")
             return None
@@ -85,9 +92,18 @@ def fetch_data_for_date(date):
 # Main script execution
 create_table()
 
-for date in dates_to_store:
-    day_data = fetch_data_for_date(date)  # Use the original date format directly
+# Determine where to resume fetching
+existing_count = count_existing_records()
+dates_to_process = dates_to_store[existing_count:existing_count + 25]  # Process next 25 dates
+
+if not dates_to_process:
+    print("All dates have already been processed and stored.")
+    sys.exit()
+
+# Fetch and insert data for the next batch of 25 dates
+for date in dates_to_process:
+    day_data = fetch_data_for_date(date)
     if day_data:
         insert_data(day_data)
 
-print(f"Data for specified dates successfully imported into the '{table_name}' table in the '{db_name}' database.")
+print(f"Processed and inserted {len(dates_to_process)} dates into the '{table_name}' table.")
