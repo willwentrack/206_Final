@@ -41,7 +41,7 @@ def create_table():
         cursor = conn.cursor()
         cursor.execute(f"""
             CREATE TABLE IF NOT EXISTS {table_name} (
-                year INTEGER,
+                year INTEGER PRIMARY KEY,
                 date TEXT,
                 attendance INTEGER,
                 PRIMARY KEY (year, date)
