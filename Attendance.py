@@ -9,7 +9,7 @@ db_name = "full_attendance_data.db"
 table_name = "AttendanceHistory"
 
 # Limit for entries per run
-MAX_ENTRIES_PER_RUN = 25
+MAX_ENTRIES_PER_RUN = 25 # only 25 datapoints per run
 
 # Read dates from the text file
 def read_dates(file_path):
@@ -41,7 +41,7 @@ def create_table():
         cursor = conn.cursor()
         cursor.execute(f"""
             CREATE TABLE IF NOT EXISTS {table_name} (
-                year INTEGER PRIMARY KEY,
+                year INTEGER,
                 date TEXT,
                 attendance INTEGER,
                 PRIMARY KEY (year, date)
@@ -69,8 +69,7 @@ def insert_data(year, date, attendance):
         except sqlite3.IntegrityError:
             print(f"Skipping duplicate entry for {year} - {date}")
 
-# Scrape attendance data for special years (2009, 2011, 2012)
-def scrape_special_years(year, date):
+def scrape_special_years(year, date): # Scrape attendance data for special years (2009, 2011, 2012)
     url = f"https://en.wikipedia.org/wiki/{year}_Michigan_State_Spartans_football_team"
     print(f"Fetching data from: {url}")
     response = requests.get(url)
@@ -84,6 +83,7 @@ def scrape_special_years(year, date):
     if year == 2012:
         target_table = tables[3] if len(tables) >= 4 else None
     elif year in {2009, 2011}:
+        # use the special year web-scraping format
         target_table = next((t for t in tables if 'Attendance' in [th.get_text(strip=True) for th in t.find('tr').find_all('th')]), None)
     else:
         return None
@@ -92,7 +92,7 @@ def scrape_special_years(year, date):
         print(f"No valid table found for {year}")
         return None
 
-    rows = target_table.find_all('tr')
+    rows = target_table.find_all('tr') 
     for row in rows:
         cells = row.find_all('td')
         if len(cells) > 1:
@@ -112,8 +112,7 @@ def scrape_special_years(year, date):
     print(f"No attendance data found for {date} on {url}")
     return None
 
-# General scraper for other years
-def scrape_attendance(year, date):
+def scrape_attendance(year, date): # scrape for the normal years
     url = f"https://en.wikipedia.org/wiki/{year}_Michigan_State_Spartans_football_team"
     print(f"Fetching data from: {url}")
     response = requests.get(url)
@@ -121,7 +120,7 @@ def scrape_attendance(year, date):
         print(f"Failed to fetch page for {year}. HTTP Status Code: {response.status_code}")
         return None
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response.content, 'html.parser') # this is the format for the normal scrape years
     rows = soup.find_all('tr', {'class': 'CFB-schedule-row'})
     for row in rows:
         cells = row.find_all('td')
@@ -148,13 +147,13 @@ def main():
         print("No dates to process. Exiting.")
         return
 
-    create_table()
+    create_table() # make the table
 
-    special_years = {2009, 2011, 2012}
+    special_years = {2009, 2011, 2012} # initialize what years are special
     entries_added = 0
 
     for date in dates:
-        if entries_added >= MAX_ENTRIES_PER_RUN:
+        if entries_added >= MAX_ENTRIES_PER_RUN: # if the entries exceed the max_entries
             print(f"Reached the limit of {MAX_ENTRIES_PER_RUN} entries for this run. Exiting.")
             break
 
