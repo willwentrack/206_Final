@@ -6,12 +6,12 @@ from scipy.stats import linregress
 
 # Database paths
 attendance_db = "full_attendance_data.db"
-temperature_csv = "temperature_averages.csv"
+temperature_csv = "temperature_averages.csv" # end file to store in
 
-# Connect to the attendance database
-conn = sqlite3.connect(attendance_db)
+conn = sqlite3.connect(attendance_db) # Connect to the attendance database
 
-# Check if AttendanceHistory table exists
+
+# Check if AttendanceHistory table exists from the attendance_db
 cursor = conn.cursor()
 cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='AttendanceHistory';")
 if not cursor.fetchone():
@@ -21,24 +21,16 @@ cursor.execute("SELECT COUNT(*) FROM AttendanceHistory;")
 if cursor.fetchone()[0] == 0:
     raise ValueError("Table 'AttendanceHistory' exists but contains no data.")
 
-# Load temperature data
-temperature_data = pd.read_csv(temperature_csv)
+temperature_data = pd.read_csv(temperature_csv) # load in the data
 
-# Ensure the temperature data's Date column is properly formatted
-temperature_data['Date'] = pd.to_datetime(temperature_data['Date'], errors='coerce')
+temperature_data['Date'] = pd.to_datetime(temperature_data['Date'], errors='coerce') # this will make sure the date column is formated correctly
 
 # Query to retrieve and format attendance data
-query = """
-SELECT 
-    year, 
-    date, 
-    attendance
-FROM 
-    AttendanceHistory
-"""
+query = """SELECT year, date, attendance FROM AttendanceHistory"""
+
 attendance_data = pd.read_sql_query(query, conn)
 
-# Construct a unified date format (YYYY-MM-DD) for attendance data
+# Make a unified date format (YYYY-MM-DD) for attendance data
 attendance_data['formatted_date'] = pd.to_datetime(
     attendance_data['year'].astype(str) + " " + attendance_data['date'],
     format='%Y %B %d',
@@ -51,7 +43,7 @@ merged_data = pd.merge(attendance_data, temperature_data, left_on="formatted_dat
 # Filter attendance to be within the range of 60,000 to 75,000
 merged_data = merged_data[(merged_data['attendance'] >= 60000) & (merged_data['attendance'] <= 75000)]
 
-# Ensure the data is available for visualization
+# Make the data available for visualizing
 if merged_data.empty:
     print("No data available to visualize.")
 else:
@@ -66,7 +58,7 @@ else:
     avg_temperature = merged_data['Temp_Avg'].mean()
 
     print(f"Average Attendance: {avg_attendance:.2f}")
-    print(f"Maximum Attendance: {max_attendance}")
+    print(f"Maximum Attendance: {max_attendance}") 
     print(f"Minimum Attendance: {min_attendance}")
     print(f"Average Temperature: {avg_temperature:.2f}\u00b0F")
 
@@ -76,7 +68,7 @@ else:
     # Attendance vs. Average Temperature
     plt.scatter(merged_data['Temp_Avg'], merged_data['attendance'], label="Data Points", alpha=0.8, edgecolors='k', c='skyblue', s=100)
 
-    # Perform linear regression
+    # Linear regression
     slope, intercept, r_value, p_value, std_err = linregress(merged_data['Temp_Avg'], merged_data['attendance'])
     line = slope * merged_data['Temp_Avg'] + intercept
 
